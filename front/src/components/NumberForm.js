@@ -7,7 +7,7 @@ const From = (props) => {
   const onSubmit = (e) => {
     console.log(state);
     e.preventDefault();
-    props.dispatch(postNumbers(state.numbers));
+    props.dispatch(postNumbers(state));
   };
   return (
     <div>
@@ -20,7 +20,7 @@ const From = (props) => {
         <textarea
           id="list"
           style={{ width: "50px", height: "20px" }}
-          onChange={(e) => setState({ ...state, numbers: e.target.value })}
+          onChange={(e) => setState(e.target.value)}
         ></textarea>
         <button type="submit" disabled={props.loading}>
           Enviar

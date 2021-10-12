@@ -7,7 +7,7 @@ const From = (props) => {
   const onSubmit = (e) => {
     console.log(state);
     e.preventDefault();
-    props.dispatch(fetchRandom(state.text));
+    props.dispatch(fetchRandom(state));
   };
   return (
     <div>
@@ -17,7 +17,7 @@ const From = (props) => {
         <textarea
           id="list"
           style={{ width: "300px", height: "120px" }}
-          onChange={(e) => setState({ ...state, text: e.target.value })}
+          onChange={(e) => setState(e.target.value)}
         ></textarea>
         <br />
         <button type="submit" disabled={props.loading}>
