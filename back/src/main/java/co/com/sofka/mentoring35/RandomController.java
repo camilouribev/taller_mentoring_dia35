@@ -18,17 +18,18 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping(value = "/r")
+@RequestMapping()
 public class RandomController {
 
     private RandomRepository randomRepository;
+    private RandomNumberRepository randomNumberRepository;
 
     @Autowired
     public RandomController(RandomRepository randomRepository) {
         this.randomRepository = randomRepository;
     }
 
-    @PostMapping("")
+    @PostMapping(value = "/r")
     public Mono<Random> post(@RequestBody RequestDTO request) {
         return Mono.just(new Random()).map(entity -> {
             entity.setDate(new Date());
@@ -42,6 +43,22 @@ public class RandomController {
             return entity;
         }).flatMap(randomRepository::save);
     }
+
+    @PostMapping(value = "/n")
+    public Mono<RandomNumber> postNumber(@RequestBody RequestDTO request) {
+        return Mono.just(new RandomNumber()).map(entity -> {
+            entity.setDate(new Date());
+            entity.setOrginalList(request.getList());
+            return entity;
+        }).map(entity -> {
+            var list = Stream.of(request.getList().split(",")).map(p -> p.trim())
+                .collect(Collectors.toList());
+            Collections.shuffle(list);
+            entity.setRandomList(list.stream().collect(Collectors.joining(",")));
+            return entity;
+        }).flatMap(randomNumberRepository::save);
+    }
+
 
     @GetMapping("")
     public Flux<Random> get() {

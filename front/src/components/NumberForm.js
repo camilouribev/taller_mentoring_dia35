@@ -1,25 +1,27 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { fetchRandom } from "../actions";
+import { postNumbers } from "../actions";
 
 const From = (props) => {
   const [state, setState] = useState();
   const onSubmit = (e) => {
     console.log(state);
     e.preventDefault();
-    props.dispatch(fetchRandom(state.text));
+    props.dispatch(postNumbers(state.numbers));
   };
   return (
     <div>
+      <br />
       <form onSubmit={onSubmit}>
-        <label htmlFor="list">Ingrese una lista separada por comas:</label>
+        <label htmlFor="list">
+          Ingrese los numeros inicial y final del rango separados por comas:
+        </label>
         <br />
         <textarea
           id="list"
-          style={{ width: "300px", height: "120px" }}
-          onChange={(e) => setState({ ...state, text: e.target.value })}
+          style={{ width: "50px", height: "20px" }}
+          onChange={(e) => setState({ ...state, numbers: e.target.value })}
         ></textarea>
-        <br />
         <button type="submit" disabled={props.loading}>
           Enviar
         </button>
