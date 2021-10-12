@@ -3,6 +3,7 @@ package co.com.sofka.mentoring35;
 import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping()
+@RequestMapping(value = "/r")
 public class RandomController {
 
     private RandomRepository randomRepository;
@@ -29,7 +30,7 @@ public class RandomController {
         this.randomRepository = randomRepository;
     }
 
-    @PostMapping(value = "/r")
+    @PostMapping(value = "")
     public Mono<Random> post(@RequestBody RequestDTO request) {
         return Mono.just(new Random()).map(entity -> {
             entity.setDate(new Date());
@@ -43,22 +44,24 @@ public class RandomController {
             return entity;
         }).flatMap(randomRepository::save);
     }
-
-    @PostMapping(value = "/n")
-    public Mono<RandomNumber> postNumber(@RequestBody RequestDTO request) {
-        return Mono.just(new RandomNumber()).map(entity -> {
+    
+    @PostMapping("/n")
+    public Mono<Random> forNumber(@RequestBody RequestDTO request) {
+        return Mono.just(new Random()).map(entity -> {
             entity.setDate(new Date());
-            entity.setOrginalList(request.getList());
+            entity.setOrginalList(IntStream.range(request.getNumber1(), request.getNumber2()+1)
+            .mapToObj(String::valueOf)
+            .collect(Collectors.joining(",")));
             return entity;
         }).map(entity -> {
-            var list = Stream.of(request.getList().split(",")).map(p -> p.trim())
-                .collect(Collectors.toList());
+            var list = Stream.of(entity.getOrginalList().split(","))
+              .collect(Collectors.toList());
             Collections.shuffle(list);
-            entity.setRandomList(list.stream().collect(Collectors.joining(",")));
+            var randomList = list.stream().collect(Collectors.joining(","));
+            entity.setRandomList(randomList);
             return entity;
-        }).flatMap(randomNumberRepository::save);
-    }
-
+        }).flatMap(randomRepository::save);
+      }
 
     @GetMapping("")
     public Flux<Random> get() {
